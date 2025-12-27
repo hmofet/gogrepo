@@ -1,8 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
 
 __appname__ = 'gogrepo.py'
 __author__ = 'eddie3'
@@ -30,30 +27,14 @@ import shutil
 import socket
 import xml.etree.ElementTree
 
-# python 2 / 3 imports
-try:
-    # python 2
-    from Queue import Queue
-    import cookielib as cookiejar
-    from httplib import BadStatusLine
-    from urlparse import urlparse
-    from urllib import urlencode, unquote
-    from urllib2 import HTTPError, URLError, HTTPCookieProcessor, build_opener, Request
-    from itertools import izip_longest as zip_longest
-    from StringIO import StringIO
-except ImportError:
-    # python 3
-    from queue import Queue
-    import http.cookiejar as cookiejar
-    from http.client import BadStatusLine
-    from urllib.parse import urlparse, urlencode, unquote
-    from urllib.request import HTTPCookieProcessor, HTTPError, URLError, build_opener, Request
-    from itertools import zip_longest
-    from io import StringIO
-
-# python 2 / 3 renames
-try: input = raw_input
-except NameError: pass
+# python 3 imports
+from queue import Queue
+import http.cookiejar as cookiejar
+from http.client import BadStatusLine
+from urllib.parse import urlparse, urlencode, unquote
+from urllib.request import HTTPCookieProcessor, HTTPError, URLError, build_opener, Request
+from itertools import zip_longest
+from io import StringIO
 
 # optional imports
 try:
@@ -117,32 +98,32 @@ DEFAULT_LANG_LIST = ['en']
 SKIP_MD5_FILE_EXT = ['.txt', '.zip']
 
 # Language table that maps two letter language to their unicode gogapi json name
-LANG_TABLE = {'en': u'English',   # English
-              'bl': u'\u0431\u044a\u043b\u0433\u0430\u0440\u0441\u043a\u0438',  # Bulgarian
-              'ru': u'\u0440\u0443\u0441\u0441\u043a\u0438\u0439',              # Russian
-              'gk': u'\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac',        # Greek
-              'sb': u'\u0421\u0440\u043f\u0441\u043a\u0430',                    # Serbian
-              'ar': u'\u0627\u0644\u0639\u0631\u0628\u064a\u0629',              # Arabic
-              'br': u'Portugu\xeas do Brasil',  # Brazilian Portuguese
-              'jp': u'\u65e5\u672c\u8a9e',      # Japanese
-              'ko': u'\ud55c\uad6d\uc5b4',      # Korean
-              'fr': u'fran\xe7ais',             # French
-              'cn': u'\u4e2d\u6587',            # Chinese
-              'cz': u'\u010desk\xfd',           # Czech
-              'hu': u'magyar',                  # Hungarian
-              'pt': u'portugu\xeas',            # Portuguese
-              'tr': u'T\xfcrk\xe7e',            # Turkish
-              'sk': u'slovensk\xfd',            # Slovak
-              'nl': u'nederlands',              # Dutch
-              'ro': u'rom\xe2n\u0103',          # Romanian
-              'es': u'espa\xf1ol',      # Spanish
-              'pl': u'polski',          # Polish
-              'it': u'italiano',        # Italian
-              'de': u'Deutsch',         # German
-              'da': u'Dansk',           # Danish
-              'sv': u'svenska',         # Swedish
-              'fi': u'Suomi',           # Finnish
-              'no': u'norsk',           # Norsk
+LANG_TABLE = {'en': 'English',   # English
+              'bl': 'български',  # Bulgarian
+              'ru': 'русский',              # Russian
+              'gk': 'Ελληνικά',        # Greek
+              'sb': 'Српска',                    # Serbian
+              'ar': 'العربية',              # Arabic
+              'br': 'Português do Brasil',  # Brazilian Portuguese
+              'jp': '日本語',      # Japanese
+              'ko': '한국어',      # Korean
+              'fr': 'français',             # French
+              'cn': '中文',            # Chinese
+              'cz': 'český',           # Czech
+              'hu': 'magyar',                  # Hungarian
+              'pt': 'português',            # Portuguese
+              'tr': 'Türkçe',            # Turkish
+              'sk': 'slovenský',            # Slovak
+              'nl': 'nederlands',              # Dutch
+              'ro': 'română',          # Romanian
+              'es': 'español',      # Spanish
+              'pl': 'polski',          # Polish
+              'it': 'italiano',        # Italian
+              'de': 'Deutsch',         # German
+              'da': 'Dansk',           # Danish
+              'sv': 'svenska',         # Swedish
+              'fi': 'Suomi',           # Finnish
+              'no': 'norsk',           # Norsk
               }
 
 VALID_OS_TYPES = ['windows', 'linux', 'mac']
@@ -161,7 +142,7 @@ def request(url, args=None, byte_range=None, retries=HTTP_RETRY_COUNT, delay=HTT
     try:
         if args is not None:
             enc_args = urlencode(args)
-            enc_args = enc_args.encode('ascii') # needed for Python 3
+            enc_args = enc_args.encode('ascii')
         else:
             enc_args = None
         req = Request(url, data=enc_args)
@@ -199,7 +180,7 @@ class AttrDict(dict):
         self[key] = val
 
 class ConditionalWriter(object):
-    """File writer that only updates file on disk if contents chanaged"""
+    """File writer that only updates file on disk if contents changed"""
 
     def __init__(self, filename):
         self._buffer = None
@@ -254,7 +235,7 @@ def load_cookies():
 def load_manifest(filepath=MANIFEST_FILENAME):
     info('loading local manifest...')
     try:
-        with codecs.open(MANIFEST_FILENAME, 'rU', 'utf-8') as r:
+        with codecs.open(MANIFEST_FILENAME, 'r', 'utf-8') as r:
             ad = r.read().replace('{', 'AttrDict(**{').replace('}', '})')
         return eval(ad)
     except IOError:
@@ -304,7 +285,7 @@ def pretty_size(n):
     for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
         if n < 1024 or unit == 'TB':
             break
-        n = n / 1024  # start at KB
+        n = n / 1024
 
     if unit == 'B':
         return "{0}{1}".format(n, unit)
@@ -815,40 +796,40 @@ def cmd_download(savedir, skipextras, skipgames, skipids, dryrun, id):
         # Generate and save a game info text file
         if not dryrun:
             with ConditionalWriter(os.path.join(item_homedir, INFO_FILENAME)) as fd_info:
-                fd_info.write(u'{0}-- {1} --{0}{0}'.format(os.linesep, item.long_title))
-                fd_info.write(u'title.......... {}{}'.format(item.title, os.linesep))
+                fd_info.write('{0}-- {1} --{0}{0}'.format(os.linesep, item.long_title))
+                fd_info.write('title.......... {}{}'.format(item.title, os.linesep))
                 if item.genre:
-                    fd_info.write(u'genre.......... {}{}'.format(item.genre, os.linesep))
-                fd_info.write(u'game id........ {}{}'.format(item.id, os.linesep))
-                fd_info.write(u'url............ {}{}'.format(GOG_HOME_URL + item.store_url, os.linesep))
+                    fd_info.write('genre.......... {}{}'.format(item.genre, os.linesep))
+                fd_info.write('game id........ {}{}'.format(item.id, os.linesep))
+                fd_info.write('url............ {}{}'.format(GOG_HOME_URL + item.store_url, os.linesep))
                 if item.rating > 0:
-                    fd_info.write(u'user rating.... {}%{}'.format(item.rating * 2, os.linesep))
+                    fd_info.write('user rating.... {}%{}'.format(item.rating * 2, os.linesep))
                 if item.release_timestamp > 0:
                     rel_date = datetime.datetime.fromtimestamp(item.release_timestamp).strftime('%B %d, %Y')
-                    fd_info.write(u'release date... {}{}'.format(rel_date, os.linesep))
+                    fd_info.write('release date... {}{}'.format(rel_date, os.linesep))
                 if hasattr(item, 'gog_messages') and item.gog_messages:
-                    fd_info.write(u'{0}gog messages...:{0}'.format(os.linesep))
+                    fd_info.write('{0}gog messages...:{0}'.format(os.linesep))
                     for gog_msg in item.gog_messages:
-                        fd_info.write(u'{0}{1}{0}'.format(os.linesep, html2text(gog_msg).strip()))
-                fd_info.write(u'{0}game items.....:{0}{0}'.format(os.linesep))
+                        fd_info.write('{0}{1}{0}'.format(os.linesep, html2text(gog_msg).strip()))
+                fd_info.write('{0}game items.....:{0}{0}'.format(os.linesep))
                 for game_item in item.downloads:
-                    fd_info.write(u'    [{}] -- {}{}'.format(game_item.name, game_item.desc, os.linesep))
+                    fd_info.write('    [{}] -- {}{}'.format(game_item.name, game_item.desc, os.linesep))
                     if game_item.version:
-                        fd_info.write(u'        version: {}{}'.format(game_item.version, os.linesep))
+                        fd_info.write('        version: {}{}'.format(game_item.version, os.linesep))
                 if len(item.extras) > 0:
-                    fd_info.write(u'{0}extras.........:{0}{0}'.format(os.linesep))
+                    fd_info.write('{0}extras.........:{0}{0}'.format(os.linesep))
                     for game_item in item.extras:
-                        fd_info.write(u'    [{}] -- {}{}'.format(game_item.name, game_item.desc, os.linesep))
+                        fd_info.write('    [{}] -- {}{}'.format(game_item.name, game_item.desc, os.linesep))
                 if item.changelog:
-                    fd_info.write(u'{0}changelog......:{0}{0}'.format(os.linesep))
+                    fd_info.write('{0}changelog......:{0}{0}'.format(os.linesep))
                     fd_info.write(html2text(item.changelog).strip())
                     fd_info.write(os.linesep)
         # Generate and save a game serial text file
         if not dryrun:
             if item.serial != '':
                 with ConditionalWriter(os.path.join(item_homedir, SERIAL_FILENAME)) as fd_serial:
-                    item.serial = item.serial.replace(u'<span>', '')
-                    item.serial = item.serial.replace(u'</span>', os.linesep)
+                    item.serial = item.serial.replace('<span>', '')
+                    item.serial = item.serial.replace('</span>', os.linesep)
                     fd_serial.write(item.serial)
 
         # Populate queue with all files to be downloaded
